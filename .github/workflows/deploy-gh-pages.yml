@@ -1,0 +1,74 @@
+name: Deploy a GitHub Pages
+
+# Se ejecuta en cada push a main y también puede dispararse manualmente
+# desde la pestaña "Actions" del repo.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Necesario para que el job pueda publicar en GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Evita que dos despliegues corran en paralelo y se pisen.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Calcular base path
+        id: base
+        # Páginas de usuario/organización (repo llamado <usuario>.github.io)
+        # se sirven en la raíz del dominio. Cualquier otro repo se sirve
+        # bajo /<nombre-del-repo>/.
+        run: |
+          if [[ "${{ github.event.repository.name }}" == *".github.io" ]]; then
+            echo "path=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=/${{ github.event.repository.name }}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build de producción
+        env:
+          VITE_BASE_PATH: ${{ steps.base.outputs.path }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Inyectar base path en 404.html
+        run: |
+          sed -i "s|/__BASE_PATH__/|${{ steps.base.outputs.path }}|g" dist/404.html
+
+      - name: Subir artefacto de Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
