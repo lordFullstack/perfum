@@ -89,7 +89,30 @@ npx supabase db seed        # aplica supabase/seed.sql (sucursal, roles, permiso
 Luego crea el primer usuario administrador: ver instrucciones al final de
 `supabase/seed.sql`.
 
-## Estado del proyecto — Fase 1 ✅
+## Estado del proyecto — Fase 1 ✅ y Fase 2 ✅
+
+**Fase 1** — Base del sistema (setup, diseño, PWA, auth) — ver detalle abajo.
+
+**Fase 2** — Roles y Permisos:
+- Pantalla `/usuarios` (solo visible/accesible con permiso `users.read`, hoy solo `admin`)
+- Crear usuarios: nombre, correo, teléfono, rol y contraseña temporal generada
+  (o editable) — implementado con una **Supabase Edge Function**
+  (`supabase/functions/admin-create-user`), porque crear usuarios de Auth
+  requiere la `service_role key`, que **nunca** debe tocar el navegador
+- Cambiar el rol de un usuario y activar/desactivar su cuenta, en línea en la tabla
+- Reglas de negocio en el dominio (no en la UI): un admin no puede
+  desactivarse a sí mismo, no puede cambiarse el rol a sí mismo, y no se
+  puede desactivar al último administrador activo de la sucursal
+- Recuperación de contraseña ("¿Olvidaste tu contraseña?") en el login,
+  vía `supabase.auth.resetPasswordForEmail`
+
+Pendiente (fases siguientes, ver plan del proyecto):
+- Módulos de negocio (Inventario, Recetas, Producción, Ventas, Caja, Clientes, Compras, Proveedores, Reportes, Auditoría, Configuración, Catálogo online)
+- Sincronización offline real vía IndexedDB (`infrastructure/offline/`, hoy vacío)
+- Code-splitting por ruta (el bundle actual es un único chunk; se resuelve naturalmente al agregar `React.lazy` por módulo en fases siguientes)
+- Flujo de "forzar cambio de contraseña en el primer login" (hoy el admin comunica la temporal manualmente)
+
+## Estado del proyecto — detalle Fase 1
 
 Completado:
 - Setup Vite + TS + Tailwind v4 + estructura Clean Architecture
