@@ -45,7 +45,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Inventario",
     items: [
-      { label: "Insumos", path: "/insumos", icon: Boxes, implemented: false, permission: "inventory.read" },
+      { label: "Insumos", path: "/insumos", icon: Boxes, implemented: true, permission: "inventory.read" },
       { label: "Recetas", path: "/recetas", icon: FlaskConical, implemented: false, permission: "recipes.read" },
       { label: "Compras", path: "/compras", icon: ShoppingBag, implemented: false, permission: "purchases.read" },
       { label: "Proveedores", path: "/proveedores", icon: Truck, implemented: false, permission: "suppliers.read" },
