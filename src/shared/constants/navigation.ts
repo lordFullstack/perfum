@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   ShoppingCart,
   Users,
+  UserCog,
   Boxes,
   Truck,
   ShoppingBag,
@@ -60,6 +61,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Sistema",
     items: [
+      { label: "Usuarios", path: "/usuarios", icon: UserCog, implemented: true, permission: "users.read" },
       { label: "Auditoría", path: "/auditoria", icon: ShieldCheck, implemented: false, permission: "audit.read" },
       { label: "Configuración", path: "/configuracion", icon: Settings, implemented: false, permission: "settings.manage" },
     ],
