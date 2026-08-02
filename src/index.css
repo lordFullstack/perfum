@@ -1,0 +1,199 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ============================================================
+   AROMAPRO — SISTEMA DE DISEÑO
+   Identidad: perfumería de autor. Tinta cálida + oro líquido +
+   burdeos + salvia. Serif editorial (Fraunces) para jerarquía,
+   sans (Inter) para UI densa, mono (JetBrains Mono) para datos
+   de precisión (SKU, lotes, montos, timestamps de auditoría).
+   ============================================================ */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  /* --- Modo claro: pergamino cálido --- */
+  --background: oklch(97.3% 0.012 80);      /* #F7F4EE */
+  --foreground: oklch(23.5% 0.014 55);      /* #241F1B */
+
+  --surface: oklch(100% 0 0);               /* #FFFFFF */
+  --surface-foreground: oklch(23.5% 0.014 55);
+
+  --card: oklch(100% 0 0);
+  --card-foreground: oklch(23.5% 0.014 55);
+
+  --popover: oklch(100% 0 0);
+  --popover-foreground: oklch(23.5% 0.014 55);
+
+  --muted: oklch(94.5% 0.014 75);
+  --muted-foreground: oklch(56% 0.02 60);   /* #8A8078 */
+
+  --border: oklch(90% 0.017 70);            /* #E4DDD1 */
+  --input: oklch(90% 0.017 70);
+  --ring: oklch(66% 0.1 75);                /* dorado, foco de accesibilidad */
+
+  /* Ámbar — acento de marca ("esencia dorada") */
+  --primary: oklch(61% 0.11 70);            /* #B8863B */
+  --primary-foreground: oklch(15% 0.01 55);
+
+  /* Burdeos — acento secundario */
+  --secondary: oklch(32% 0.08 20);          /* #6E2A3A */
+  --secondary-foreground: oklch(97% 0.012 80);
+
+  /* Salvia — estados positivos */
+  --success: oklch(52% 0.06 135);           /* #5F7A55 */
+  --success-foreground: oklch(97% 0.012 80);
+
+  --warning: oklch(62% 0.1 55);             /* #C17A3D */
+  --warning-foreground: oklch(15% 0.01 55);
+
+  --destructive: oklch(48% 0.14 25);        /* #A23B3B */
+  --destructive-foreground: oklch(97% 0.012 80);
+
+  --accent: oklch(94.5% 0.014 75);
+  --accent-foreground: oklch(23.5% 0.014 55);
+
+  --sidebar: oklch(23.5% 0.014 55);         /* sidebar siempre en tinta, ambos modos */
+  --sidebar-foreground: oklch(93% 0.012 75);
+  --sidebar-primary: oklch(66% 0.1 75);
+  --sidebar-border: oklch(30% 0.015 55);
+}
+
+.dark {
+  /* --- Modo oscuro: tinta profunda --- */
+  --background: oklch(17.5% 0.012 55);      /* #15130F */
+  --foreground: oklch(93% 0.012 75);        /* #F2ECE1 */
+
+  --surface: oklch(21% 0.013 55);           /* #1E1B16 */
+  --surface-foreground: oklch(93% 0.012 75);
+
+  --card: oklch(21% 0.013 55);
+  --card-foreground: oklch(93% 0.012 75);
+
+  --popover: oklch(21% 0.013 55);
+  --popover-foreground: oklch(93% 0.012 75);
+
+  --muted: oklch(26% 0.014 55);
+  --muted-foreground: oklch(63% 0.018 65);  /* #9A8F80 */
+
+  --border: oklch(29% 0.014 55);            /* #34302A */
+  --input: oklch(29% 0.014 55);
+  --ring: oklch(74% 0.11 75);
+
+  --primary: oklch(74% 0.11 75);            /* #D9A94F — oro más luminoso */
+  --primary-foreground: oklch(17.5% 0.012 55);
+
+  --secondary: oklch(42% 0.09 20);          /* #8C4356 */
+  --secondary-foreground: oklch(93% 0.012 75);
+
+  --success: oklch(60% 0.07 135);
+  --success-foreground: oklch(15% 0.01 55);
+
+  --warning: oklch(68% 0.11 55);
+  --warning-foreground: oklch(15% 0.01 55);
+
+  --destructive: oklch(58% 0.15 25);
+  --destructive-foreground: oklch(97% 0.012 80);
+
+  --accent: oklch(26% 0.014 55);
+  --accent-foreground: oklch(93% 0.012 75);
+
+  --sidebar: oklch(13% 0.01 55);
+  --sidebar-foreground: oklch(90% 0.012 75);
+  --sidebar-primary: oklch(74% 0.11 75);
+  --sidebar-border: oklch(24% 0.013 55);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-border: var(--sidebar-border);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Tipografía */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    /* Evita el "flash" de zoom al enfocar inputs en iOS dentro de la PWA instalada */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+
+  /* Cifras monetarias, códigos y timestamps usan la mono en toda la app */
+  .font-data {
+    @apply font-mono tabular-nums;
+  }
+
+  /* Foco visible consistente (accesibilidad) — nunca se elimina el outline */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}
+
+@layer utilities {
+  /* Transición estándar de la app: 180ms ease-out, sin rebote (elegancia = calma) */
+  .transition-elegant {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition-duration: 180ms;
+  }
+}
