@@ -5,6 +5,8 @@ import { UserManagementProvider } from "@/presentation/hooks/use-user-management
 import { SupplyProvider } from "@/presentation/hooks/use-supply-management";
 import { SupplierProvider } from "@/presentation/hooks/use-supplier-management";
 import { PurchaseProvider } from "@/presentation/hooks/use-purchase-management";
+import { PerfumeProvider } from "@/presentation/hooks/use-perfume-management";
+import { RecipeProvider } from "@/presentation/hooks/use-recipe-management";
 import { ThemeProvider } from "@/presentation/hooks/theme-provider";
 import { ProtectedRoute } from "@/presentation/routes/protected-route";
 import { RequirePermission } from "@/presentation/routes/require-permission";
@@ -16,6 +18,7 @@ import { UsersPage } from "@/presentation/features/users/users-page";
 import { InventoryPage } from "@/presentation/features/inventory/inventory-page";
 import { SuppliersPage } from "@/presentation/features/suppliers/suppliers-page";
 import { PurchasesPage } from "@/presentation/features/purchases/purchases-page";
+import { RecipesPage } from "@/presentation/features/recipes/recipes-page";
 import { Toaster } from "@/presentation/components/ui/sonner";
 
 export function App() {
@@ -27,6 +30,8 @@ export function App() {
             <SupplyProvider>
               <SupplierProvider>
                 <PurchaseProvider>
+                <PerfumeProvider>
+                <RecipeProvider>
                   <Routes>
                     <Route path="/login" element={<LoginPage />} />
 
@@ -37,7 +42,7 @@ export function App() {
                         <Route path="/produccion" element={<ModulePlaceholderRoute />} />
                         <Route path="/caja" element={<ModulePlaceholderRoute />} />
                         <Route path="/clientes" element={<ModulePlaceholderRoute />} />
-                        <Route path="/recetas" element={<ModulePlaceholderRoute />} />
+
                         <Route path="/reportes" element={<ModulePlaceholderRoute />} />
                         <Route path="/catalogo" element={<ModulePlaceholderRoute />} />
                         <Route path="/auditoria" element={<ModulePlaceholderRoute />} />
@@ -59,12 +64,18 @@ export function App() {
                           <Route path="/compras" element={<PurchasesPage />} />
                         </Route>
 
+                        <Route element={<RequirePermission permission="recipes.read" />}>
+                          <Route path="/recetas" element={<RecipesPage />} />
+                        </Route>
+
                         <Route path="*" element={<ModulePlaceholderRoute />} />
                       </Route>
                     </Route>
                   </Routes>
 
                   <Toaster position="top-right" richColors closeButton />
+                </RecipeProvider>
+                </PerfumeProvider>
                 </PurchaseProvider>
               </SupplierProvider>
             </SupplyProvider>

@@ -73,7 +73,9 @@ export class SupabasePurchaseRepository implements PurchaseRepository {
     const { data, error } = await supabase.rpc("create_purchase", {
       p_supplier_id: input.supplierId,
       p_purchase_date: input.purchaseDate,
-      p_invoice_number: input.invoiceNumber,
+      // El parámetro Postgres es `text` sin marca de nulidad en los tipos generados,
+      // aunque la función acepta NULL en tiempo de ejecución.
+      p_invoice_number: input.invoiceNumber as unknown as string,
       p_items: input.items.map((item) => ({
         supply_id: item.supplyId,
         quantity: item.quantity,
