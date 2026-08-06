@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Loader2, Lock, Mail } from "lucide-react";
+import { toast } from "sonner";
 
 import { useAuth } from "@/presentation/hooks/use-auth";
+import { supabase } from "@/infrastructure/supabase/client";
 import { BrandMark } from "@/presentation/components/shared/brand-mark";
 import { ThemeToggle } from "@/presentation/components/shared/theme-toggle";
 import { Button } from "@/presentation/components/ui/button";
@@ -17,6 +19,7 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Ya hay sesión activa: no tiene sentido ver el login.
@@ -40,6 +43,22 @@ export function LoginPage() {
       );
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleForgotPassword() {
+    if (!email) {
+      setErrorMessage("Escribí tu correo arriba para poder enviarte el enlace de recuperación.");
+      return;
+    }
+    setIsResetting(true);
+    try {
+      await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}login`,
+      });
+      toast.success("Si el correo existe, te enviamos un enlace para restablecer tu contraseña.");
+    } finally {
+      setIsResetting(false);
     }
   }
 
@@ -89,7 +108,17 @@ export function LoginPage() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="password">Contraseña</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Contraseña</Label>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={isResetting}
+                className="text-xs text-muted-foreground underline-offset-2 transition-elegant hover:text-primary hover:underline disabled:opacity-50"
+              >
+                {isResetting ? "Enviando…" : "¿Olvidaste tu contraseña?"}
+              </button>
+            </div>
             <div className="relative">
               <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input

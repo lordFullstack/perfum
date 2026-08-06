@@ -28,6 +28,7 @@ export interface Database {
           code: string;
         };
         Update: Partial<Database["public"]["Tables"]["branches"]["Row"]>;
+        Relationships: [];
       };
       roles: {
         Row: {
@@ -41,6 +42,7 @@ export interface Database {
           name: string;
         };
         Update: Partial<Database["public"]["Tables"]["roles"]["Row"]>;
+        Relationships: [];
       };
       permissions: {
         Row: {
@@ -55,6 +57,7 @@ export interface Database {
           code: string;
         };
         Update: Partial<Database["public"]["Tables"]["permissions"]["Row"]>;
+        Relationships: [];
       };
       role_permissions: {
         Row: {
@@ -63,6 +66,7 @@ export interface Database {
         };
         Insert: Database["public"]["Tables"]["role_permissions"]["Row"];
         Update: Partial<Database["public"]["Tables"]["role_permissions"]["Row"]>;
+        Relationships: [];
       };
       profiles: {
         Row: {
@@ -85,6 +89,7 @@ export interface Database {
           email: string;
         };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Row"]>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
