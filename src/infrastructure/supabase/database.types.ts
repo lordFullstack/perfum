@@ -165,6 +165,66 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["stock_movements"]["Row"]>;
         Relationships: [];
       };
+
+      suppliers: {
+        Row: {
+          id: string;
+          branch_id: string;
+          name: string;
+          tax_id: string | null;
+          phone: string | null;
+          email: string | null;
+          address: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["suppliers"]["Row"]> & {
+          branch_id: string;
+          name: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["suppliers"]["Row"]>;
+        Relationships: [];
+      };
+      purchases: {
+        Row: {
+          id: string;
+          branch_id: string;
+          supplier_id: string;
+          purchase_date: string;
+          invoice_number: string | null;
+          status: string;
+          total_amount: number;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["purchases"]["Row"]> & {
+          branch_id: string;
+          supplier_id: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["purchases"]["Row"]>;
+        Relationships: [];
+      };
+      purchase_items: {
+        Row: {
+          id: string;
+          purchase_id: string;
+          supply_id: string;
+          quantity: number;
+          unit_cost: number;
+          batch_code: string | null;
+          expiration_date: string | null;
+          subtotal: number;
+        };
+        Insert: Partial<Database["public"]["Tables"]["purchase_items"]["Row"]> & {
+          purchase_id: string;
+          supply_id: string;
+          quantity: number;
+          unit_cost: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["purchase_items"]["Row"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -177,6 +237,19 @@ export interface Database {
           p_notes?: string | null;
         };
         Returns: Database["public"]["Tables"]["supplies"]["Row"];
+      };
+      create_purchase: {
+        Args: {
+          p_supplier_id: string;
+          p_purchase_date: string;
+          p_invoice_number: string | null;
+          p_items: unknown;
+        };
+        Returns: Database["public"]["Tables"]["purchases"]["Row"];
+      };
+      cancel_purchase: {
+        Args: { p_purchase_id: string };
+        Returns: Database["public"]["Tables"]["purchases"]["Row"];
       };
     };
     Enums: Record<string, never>;

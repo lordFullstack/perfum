@@ -7,7 +7,7 @@ a partir de una **receta** que descuenta insumos automáticamente al fabricarse.
 ## Stack
 
 - **Frontend**: React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui (componentes adaptados a mano)
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
 - **PWA**: `vite-plugin-pwa` (Workbox), instalable en Android, iPhone y PC
 
 ## Arquitectura
@@ -36,8 +36,18 @@ src/
 
 **Regla de dependencia**: `domain` no importa nada de `infrastructure` ni de
 `presentation`. La inyección de dependencias ocurre en la capa de presentación
-(ver `src/presentation/hooks/use-auth.tsx`, que instancia `SupabaseAuthRepository`
-y se lo pasa a los casos de uso de dominio).
+vía contextos (`use-auth.tsx`, `use-supply-management.tsx`, etc.), que instancian
+el repositorio Supabase concreto y se lo pasan a los casos de uso de dominio.
+
+**Escrituras que afectan stock son siempre atómicas vía RPC de Postgres**
+(`adjust_supply_stock`, `create_purchase`, `cancel_purchase`) — nunca varios
+pasos separados desde el navegador. Esto es crítico: es el mismo patrón que
+va a usar Producción (Fase 6) para descontar insumos según receta.
+
+**RLS basada en permisos, no en roles hardcodeados**: la función
+`current_user_has_permission(code)` (creada en la Fase 3) se reutiliza en las
+políticas de todos los módulos — agregar un rol nuevo en el futuro no requiere
+tocar SQL de políticas, solo la tabla `role_permissions`.
 
 ## Decisión: sucursal única, lista para escalar
 
@@ -48,7 +58,7 @@ sucursal en la UI. Para escalar a múltiples sucursales en el futuro:
 
 1. Reintroducir la tabla `user_branches` (acceso multi-sucursal por usuario).
 2. Agregar el selector de sucursal en el `Topbar`.
-3. Cambiar la resolución de `branch_id` en `use-auth.tsx` de fija a seleccionada.
+3. Cambiar la resolución de `branch_id` de fija a seleccionada.
 
 Ninguna tabla de negocio necesita migrarse para ese cambio.
 
@@ -56,17 +66,16 @@ Ninguna tabla de negocio necesita migrarse para ese cambio.
 
 Dos roles predefinidos (`admin`, `vendedor`), con permisos granulares por
 módulo y acción (`inventory.read_cost`, `sales.read_own`, etc.). Ver la matriz
-completa y su seed en `supabase/seed.sql`. El sistema está preparado para
-agregar roles adicionales sin cambios de esquema.
+completa y su seed en `supabase/seed.sql`. Gestión desde la UI en `/usuarios`.
 
 ## Sistema de diseño
 
 Paleta y tipografía documentadas como tokens CSS en `src/index.css` (Tailwind v4,
-sin `tailwind.config.js`). Resumen:
+sin `tailwind.config.js`).
 
 - **Tipografía**: Fraunces (display/títulos), Inter (UI), JetBrains Mono (datos: SKU, montos, timestamps)
 - **Color**: tinta cálida + oro (marca) + burdeos (secundario) + salvia (éxito), en modo claro y oscuro
-- **Firma visual**: indicador de navegación activa estilo "menisco líquido" (ver `sidebar.tsx`)
+- **Firma visual**: indicador de nivel de stock estilo "probeta graduada" (`stock-level-gauge.tsx`) e indicador de navegación activa estilo "menisco líquido" (`sidebar.tsx`)
 
 ## Setup
 
@@ -82,79 +91,70 @@ npm run dev
 
 ```bash
 npx supabase link --project-ref <tu-project-ref>
-npx supabase db push        # aplica supabase/migrations/*.sql
+npx supabase db push        # aplica supabase/migrations/*.sql en orden
 npx supabase db seed        # aplica supabase/seed.sql (sucursal, roles, permisos)
 ```
 
-Luego crea el primer usuario administrador: ver instrucciones al final de
-`supabase/seed.sql`.
+Luego aplicar manualmente `supabase/seed_phase3.sql` (categorías de insumos y
+unidades de medida — no forma parte del seed principal porque se agregó en una
+fase posterior). Crear el primer usuario administrador: ver instrucciones al
+final de `supabase/seed.sql`.
 
-## Estado del proyecto — Fase 1 ✅, Fase 2 ✅ y Fase 3 ✅
+### Edge Functions
 
-**Fase 3** — Inventario de Insumos:
-- Pantalla `/insumos`: alta/edición de insumos, ajuste de stock (entrada/salida), stock mínimo, ubicación
-- Costo promedio ponderado, recalculado automáticamente en cada entrada con costo informado — columna oculta para roles sin `inventory.read_cost`
-- Indicador visual de nivel de stock ("probeta graduada", firma visual del sistema de diseño) + badge de stock bajo
-- **Todo ajuste de stock es atómico**: función Postgres `adjust_supply_stock()` actualiza `supplies.stock` e inserta en `stock_movements` en una sola transacción, con `for update` para evitar condiciones de carrera si dos personas ajustan el mismo insumo a la vez
-- Función reutilizable `current_user_has_permission()`: las políticas RLS de este módulo (y de todos los que siguen) chequean permisos concretos, no roles hardcodeados
-- Categorías (12) y unidades de medida (5) precargadas por seed, sin UI de edición todavía (catálogo fijo por ahora)
+```bash
+npx supabase functions deploy admin-create-user
+```
 
-**Decisión de alcance**: proveedor, fecha de compra, lote y vencimiento por insumo **no** se cargan en esta fase — son datos inherentemente ligados a una compra puntual, y se incorporan naturalmente en la Fase 4 (Compras) vía `stock_movements.reference_type = 'purchase'` y una futura tabla `supply_batches`.
+## Estado del proyecto
 
-Pendiente (fases siguientes, ver plan del proyecto):
-- Módulos de negocio (Recetas, Producción, Ventas, Caja, Clientes, Compras, Proveedores, Reportes, Auditoría, Configuración, Catálogo online)
-- Pantalla de historial de movimientos de stock (llega naturalmente con el Reporte de "Movimientos" en la Fase 11)
+**Fase 1 — Base del sistema** ✅
+- Setup Vite + TS + Tailwind v4, Clean Architecture, sistema de diseño, PWA instalable con caché offline básico
+- Autenticación completa con Supabase Auth (dominio + infraestructura + presentación), roles y permisos resueltos en el login
+- Layout autenticado (Sidebar + Topbar + nav móvil), modo claro/oscuro, rutas protegidas
+
+**Fase 2 — Roles y Permisos** ✅
+- Pantalla `/usuarios`: crear usuarios (vía Edge Function `admin-create-user`, la única pieza del sistema con `service_role key`), cambiar rol, activar/desactivar
+- Reglas de negocio: un admin no puede desactivarse ni cambiarse el rol a sí mismo, ni desactivar al último admin activo de la sucursal
+- Recuperación de contraseña en el login
+
+**Fase 3 — Inventario de Insumos** ✅
+- Pantalla `/insumos`: alta/edición, ajuste de stock (entrada/salida) atómico vía RPC `adjust_supply_stock`, costo promedio ponderado, indicador visual de nivel de stock
+- Categorías (12) y unidades de medida (5) precargadas por seed
+- Creada `current_user_has_permission()`, reutilizada por el resto de los módulos
+
+**Fase 4 — Proveedores y Compras** ✅
+- Pantalla `/proveedores`: alta/edición/desactivación
+- Pantalla `/compras`: registrar compra con múltiples ítems (insumo, cantidad, costo, lote/vencimiento opcionales) vía RPC `create_purchase` (todo o nada: cabecera + ítems + stock en una transacción), cancelar compra vía `cancel_purchase` (revierte stock, falla si ya no alcanza)
+- Movimientos de stock de una compra quedan trazados a ella (`stock_movements.reference_type = 'purchase'`)
+
+**Decisiones de alcance tomadas:**
+- No hay tabla `supply_batches` con seguimiento FIFO de remanente por lote — el lote/vencimiento se guarda como dato informativo en `purchase_items`. Se agrega en una fase dedicada si se necesita descuento lote por lote.
+- No hay pantalla de historial de movimientos de stock todavía — llega con el Reporte de "Movimientos" (Fase 11).
+
+**Pendiente:**
+- Módulos de negocio: Recetas, Producción, Ventas, Caja, Clientes, Reportes, Auditoría, Configuración, Catálogo online
 - Sincronización offline real vía IndexedDB (`infrastructure/offline/`, hoy vacío)
-- Code-splitting por ruta
-
-## Estado del proyecto — detalle Fase 1
-- Pantalla `/usuarios` (solo visible/accesible con permiso `users.read`, hoy solo `admin`)
-- Crear usuarios: nombre, correo, teléfono, rol y contraseña temporal generada
-  (o editable) — implementado con una **Supabase Edge Function**
-  (`supabase/functions/admin-create-user`), porque crear usuarios de Auth
-  requiere la `service_role key`, que **nunca** debe tocar el navegador
-- Cambiar el rol de un usuario y activar/desactivar su cuenta, en línea en la tabla
-- Reglas de negocio en el dominio (no en la UI): un admin no puede
-  desactivarse a sí mismo, no puede cambiarse el rol a sí mismo, y no se
-  puede desactivar al último administrador activo de la sucursal
-- Recuperación de contraseña ("¿Olvidaste tu contraseña?") en el login,
-  vía `supabase.auth.resetPasswordForEmail`
-
-Pendiente (fases siguientes, ver plan del proyecto):
-- Módulos de negocio (Inventario, Recetas, Producción, Ventas, Caja, Clientes, Compras, Proveedores, Reportes, Auditoría, Configuración, Catálogo online)
-- Sincronización offline real vía IndexedDB (`infrastructure/offline/`, hoy vacío)
-- Code-splitting por ruta (el bundle actual es un único chunk; se resuelve naturalmente al agregar `React.lazy` por módulo en fases siguientes)
-- Flujo de "forzar cambio de contraseña en el primer login" (hoy el admin comunica la temporal manualmente)
-
-## Estado del proyecto — detalle Fase 1
-
-Completado:
-- Setup Vite + TS + Tailwind v4 + estructura Clean Architecture
-- Sistema de diseño (tokens claro/oscuro, tipografía, íconos PWA)
-- PWA instalable con caché offline básico (API en `NetworkFirst`, imágenes en `CacheFirst`)
-- Autenticación completa con Supabase Auth (dominio + infraestructura + presentación)
-- Roles y permisos resueltos en el login, aplicados en navegación (`usePermission`)
-- Layout autenticado: Sidebar (desktop) + barra inferior con drawer (móvil) + Topbar
-- Modo claro/oscuro con `next-themes`
-- Página de Login y Dashboard de bienvenida
-- Políticas RLS para sucursal, roles, permisos y perfiles
-- Rutas protegidas + placeholders elegantes para módulos de fases futuras
-
-Pendiente (fases siguientes, ver plan del proyecto):
-- Módulos de negocio (Inventario, Recetas, Producción, Ventas, Caja, Clientes, Compras, Proveedores, Reportes, Auditoría, Configuración, Catálogo online)
-- Sincronización offline real vía IndexedDB (`infrastructure/offline/`, hoy vacío)
-- Code-splitting por ruta (el bundle actual es un único chunk ~622 kB; se resuelve naturalmente al agregar `React.lazy` por módulo en fases siguientes)
+- Code-splitting por ruta (el bundle actual es un único chunk; se resuelve con `React.lazy` por módulo)
+- Flujo de "forzar cambio de contraseña en el primer login"
 
 ## Notas técnicas
 
-- **shadcn/ui**: el registro (`ui.shadcn.com`) no es accesible desde este
-  entorno de desarrollo, así que los componentes en `presentation/components/ui/`
-  fueron escritos a mano siguiendo el estándar de shadcn (estilo `new-york`),
-  con las primitivas de Radix UI instaladas directamente. Son 100% compatibles
-  con el CLI de shadcn si se usa en otro entorno con acceso a internet completo.
-- **`database.types.ts`**: escrito a mano reflejando el esquema SQL actual.
-  Regenerar con `npx supabase gen types typescript` una vez exista el proyecto
-  Supabase real, y en cada fase que agregue tablas nuevas.
+- **shadcn/ui**: el registro (`ui.shadcn.com`) no es accesible desde el entorno
+  de desarrollo original de este proyecto, así que los componentes en
+  `presentation/components/ui/` fueron escritos a mano siguiendo el estándar
+  de shadcn (estilo `new-york`), con las primitivas de Radix UI instaladas
+  directamente. Son 100% compatibles con el CLI de shadcn si se usa en otro
+  entorno con acceso a internet completo.
+- **`database.types.ts`**: escrito a mano reflejando el esquema SQL actual
+  (incluye el campo `Relationships: []` que exige el tipado interno de
+  `@supabase/postgrest-js`, aunque no se usen). Regenerar con
+  `npx supabase gen types typescript` cuando sea posible, y mantenerlo
+  actualizado en cada fase que agregue tablas o RPCs nuevas.
 - **react-router-dom**: fijado en `7.18.1`. La única vulnerabilidad reportada
   por `npm audit` en este rango es específica del modo RSC/framework de React
   Router, que esta app no usa (SPA cliente puro con `BrowserRouter`).
+- **Seguridad de RPCs**: todas las funciones `SECURITY DEFINER` (`adjust_supply_stock`,
+  `create_purchase`, `cancel_purchase`, `current_user_*`) verifican el permiso
+  correspondiente *dentro* de la función antes de hacer nada, porque
+  `SECURITY DEFINER` evita las políticas RLS — el chequeo de permiso no es opcional.

@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/presentation/hooks/use-auth";
 import { UserManagementProvider } from "@/presentation/hooks/use-user-management";
 import { SupplyProvider } from "@/presentation/hooks/use-supply-management";
+import { SupplierProvider } from "@/presentation/hooks/use-supplier-management";
+import { PurchaseProvider } from "@/presentation/hooks/use-purchase-management";
 import { ThemeProvider } from "@/presentation/hooks/theme-provider";
 import { ProtectedRoute } from "@/presentation/routes/protected-route";
 import { RequirePermission } from "@/presentation/routes/require-permission";
@@ -12,6 +14,8 @@ import { LoginPage } from "@/presentation/features/auth/login-page";
 import { DashboardPage } from "@/presentation/features/dashboard/dashboard-page";
 import { UsersPage } from "@/presentation/features/users/users-page";
 import { InventoryPage } from "@/presentation/features/inventory/inventory-page";
+import { SuppliersPage } from "@/presentation/features/suppliers/suppliers-page";
+import { PurchasesPage } from "@/presentation/features/purchases/purchases-page";
 import { Toaster } from "@/presentation/components/ui/sonner";
 
 export function App() {
@@ -21,38 +25,48 @@ export function App() {
         <AuthProvider>
           <UserManagementProvider>
             <SupplyProvider>
-              <Routes>
-                <Route path="/login" element={<LoginPage />} />
+              <SupplierProvider>
+                <PurchaseProvider>
+                  <Routes>
+                    <Route path="/login" element={<LoginPage />} />
 
-                <Route element={<ProtectedRoute />}>
-                  <Route element={<AppLayout />}>
-                    <Route path="/" element={<DashboardPage />} />
-                    <Route path="/ventas" element={<ModulePlaceholderRoute />} />
-                    <Route path="/produccion" element={<ModulePlaceholderRoute />} />
-                    <Route path="/caja" element={<ModulePlaceholderRoute />} />
-                    <Route path="/clientes" element={<ModulePlaceholderRoute />} />
-                    <Route path="/recetas" element={<ModulePlaceholderRoute />} />
-                    <Route path="/compras" element={<ModulePlaceholderRoute />} />
-                    <Route path="/proveedores" element={<ModulePlaceholderRoute />} />
-                    <Route path="/reportes" element={<ModulePlaceholderRoute />} />
-                    <Route path="/catalogo" element={<ModulePlaceholderRoute />} />
-                    <Route path="/auditoria" element={<ModulePlaceholderRoute />} />
-                    <Route path="/configuracion" element={<ModulePlaceholderRoute />} />
+                    <Route element={<ProtectedRoute />}>
+                      <Route element={<AppLayout />}>
+                        <Route path="/" element={<DashboardPage />} />
+                        <Route path="/ventas" element={<ModulePlaceholderRoute />} />
+                        <Route path="/produccion" element={<ModulePlaceholderRoute />} />
+                        <Route path="/caja" element={<ModulePlaceholderRoute />} />
+                        <Route path="/clientes" element={<ModulePlaceholderRoute />} />
+                        <Route path="/recetas" element={<ModulePlaceholderRoute />} />
+                        <Route path="/reportes" element={<ModulePlaceholderRoute />} />
+                        <Route path="/catalogo" element={<ModulePlaceholderRoute />} />
+                        <Route path="/auditoria" element={<ModulePlaceholderRoute />} />
+                        <Route path="/configuracion" element={<ModulePlaceholderRoute />} />
 
-                    <Route element={<RequirePermission permission="users.read" />}>
-                      <Route path="/usuarios" element={<UsersPage />} />
+                        <Route element={<RequirePermission permission="users.read" />}>
+                          <Route path="/usuarios" element={<UsersPage />} />
+                        </Route>
+
+                        <Route element={<RequirePermission permission="inventory.read" />}>
+                          <Route path="/insumos" element={<InventoryPage />} />
+                        </Route>
+
+                        <Route element={<RequirePermission permission="suppliers.read" />}>
+                          <Route path="/proveedores" element={<SuppliersPage />} />
+                        </Route>
+
+                        <Route element={<RequirePermission permission="purchases.read" />}>
+                          <Route path="/compras" element={<PurchasesPage />} />
+                        </Route>
+
+                        <Route path="*" element={<ModulePlaceholderRoute />} />
+                      </Route>
                     </Route>
+                  </Routes>
 
-                    <Route element={<RequirePermission permission="inventory.read" />}>
-                      <Route path="/insumos" element={<InventoryPage />} />
-                    </Route>
-
-                    <Route path="*" element={<ModulePlaceholderRoute />} />
-                  </Route>
-                </Route>
-              </Routes>
-
-              <Toaster position="top-right" richColors closeButton />
+                  <Toaster position="top-right" richColors closeButton />
+                </PurchaseProvider>
+              </SupplierProvider>
             </SupplyProvider>
           </UserManagementProvider>
         </AuthProvider>
