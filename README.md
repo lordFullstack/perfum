@@ -89,11 +89,25 @@ npx supabase db seed        # aplica supabase/seed.sql (sucursal, roles, permiso
 Luego crea el primer usuario administrador: ver instrucciones al final de
 `supabase/seed.sql`.
 
-## Estado del proyecto — Fase 1 ✅ y Fase 2 ✅
+## Estado del proyecto — Fase 1 ✅, Fase 2 ✅ y Fase 3 ✅
 
-**Fase 1** — Base del sistema (setup, diseño, PWA, auth) — ver detalle abajo.
+**Fase 3** — Inventario de Insumos:
+- Pantalla `/insumos`: alta/edición de insumos, ajuste de stock (entrada/salida), stock mínimo, ubicación
+- Costo promedio ponderado, recalculado automáticamente en cada entrada con costo informado — columna oculta para roles sin `inventory.read_cost`
+- Indicador visual de nivel de stock ("probeta graduada", firma visual del sistema de diseño) + badge de stock bajo
+- **Todo ajuste de stock es atómico**: función Postgres `adjust_supply_stock()` actualiza `supplies.stock` e inserta en `stock_movements` en una sola transacción, con `for update` para evitar condiciones de carrera si dos personas ajustan el mismo insumo a la vez
+- Función reutilizable `current_user_has_permission()`: las políticas RLS de este módulo (y de todos los que siguen) chequean permisos concretos, no roles hardcodeados
+- Categorías (12) y unidades de medida (5) precargadas por seed, sin UI de edición todavía (catálogo fijo por ahora)
 
-**Fase 2** — Roles y Permisos:
+**Decisión de alcance**: proveedor, fecha de compra, lote y vencimiento por insumo **no** se cargan en esta fase — son datos inherentemente ligados a una compra puntual, y se incorporan naturalmente en la Fase 4 (Compras) vía `stock_movements.reference_type = 'purchase'` y una futura tabla `supply_batches`.
+
+Pendiente (fases siguientes, ver plan del proyecto):
+- Módulos de negocio (Recetas, Producción, Ventas, Caja, Clientes, Compras, Proveedores, Reportes, Auditoría, Configuración, Catálogo online)
+- Pantalla de historial de movimientos de stock (llega naturalmente con el Reporte de "Movimientos" en la Fase 11)
+- Sincronización offline real vía IndexedDB (`infrastructure/offline/`, hoy vacío)
+- Code-splitting por ruta
+
+## Estado del proyecto — detalle Fase 1
 - Pantalla `/usuarios` (solo visible/accesible con permiso `users.read`, hoy solo `admin`)
 - Crear usuarios: nombre, correo, teléfono, rol y contraseña temporal generada
   (o editable) — implementado con una **Supabase Edge Function**

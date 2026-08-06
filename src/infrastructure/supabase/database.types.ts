@@ -91,9 +91,94 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["profiles"]["Row"]>;
         Relationships: [];
       };
+
+      supply_categories: {
+        Row: {
+          id: string;
+          name: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["supply_categories"]["Row"]> & {
+          name: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["supply_categories"]["Row"]>;
+        Relationships: [];
+      };
+      units_of_measure: {
+        Row: {
+          id: string;
+          name: string;
+          abbreviation: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["units_of_measure"]["Row"]> & {
+          name: string;
+          abbreviation: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["units_of_measure"]["Row"]>;
+        Relationships: [];
+      };
+      supplies: {
+        Row: {
+          id: string;
+          branch_id: string;
+          code: string;
+          name: string;
+          category_id: string;
+          unit_id: string;
+          stock: number;
+          min_stock: number;
+          average_cost: number;
+          location: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["supplies"]["Row"]> & {
+          branch_id: string;
+          code: string;
+          name: string;
+          category_id: string;
+          unit_id: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["supplies"]["Row"]>;
+        Relationships: [];
+      };
+      stock_movements: {
+        Row: {
+          id: string;
+          branch_id: string;
+          supply_id: string;
+          movement_type: string;
+          quantity: number;
+          unit_cost: number | null;
+          reference_type: string | null;
+          reference_id: string | null;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["stock_movements"]["Row"]> & {
+          branch_id: string;
+          supply_id: string;
+          movement_type: string;
+          quantity: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["stock_movements"]["Row"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      adjust_supply_stock: {
+        Args: {
+          p_supply_id: string;
+          p_quantity: number;
+          p_movement_type: string;
+          p_unit_cost?: number | null;
+          p_notes?: string | null;
+        };
+        Returns: Database["public"]["Tables"]["supplies"]["Row"];
+      };
+    };
     Enums: Record<string, never>;
   };
 }
