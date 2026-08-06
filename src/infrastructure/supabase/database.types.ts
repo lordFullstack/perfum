@@ -225,6 +225,69 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["purchase_items"]["Row"]>;
         Relationships: [];
       };
+
+      perfumes: {
+        Row: {
+          id: string;
+          branch_id: string;
+          code: string;
+          name: string;
+          description: string | null;
+          category: string | null;
+          base_price: number;
+          image_url: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["perfumes"]["Row"]> & {
+          branch_id: string;
+          code: string;
+          name: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["perfumes"]["Row"]>;
+        Relationships: [];
+      };
+      recipes: {
+        Row: {
+          id: string;
+          branch_id: string;
+          perfume_id: string;
+          version: number;
+          is_active: boolean;
+          yield_ml: number;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["recipes"]["Row"]> & {
+          branch_id: string;
+          perfume_id: string;
+          version: number;
+          yield_ml: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["recipes"]["Row"]>;
+        Relationships: [];
+      };
+      recipe_items: {
+        Row: {
+          id: string;
+          recipe_id: string;
+          supply_id: string;
+          quantity: number;
+          unit_id: string;
+          notes: string | null;
+          sort_order: number;
+        };
+        Insert: Partial<Database["public"]["Tables"]["recipe_items"]["Row"]> & {
+          recipe_id: string;
+          supply_id: string;
+          quantity: number;
+          unit_id: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["recipe_items"]["Row"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -250,6 +313,27 @@ export interface Database {
       cancel_purchase: {
         Args: { p_purchase_id: string };
         Returns: Database["public"]["Tables"]["purchases"]["Row"];
+      };
+      create_recipe: {
+        Args: {
+          p_perfume_id: string;
+          p_yield_ml: number;
+          p_notes: string | null;
+          p_items: unknown;
+        };
+        Returns: string;
+      };
+      calculate_recipe_cost: {
+        Args: { p_recipe_id: string };
+        Returns: unknown;
+      };
+      check_recipe_feasibility: {
+        Args: { p_recipe_id: string; p_quantity_to_produce: number };
+        Returns: unknown;
+      };
+      duplicate_recipe: {
+        Args: { p_recipe_id: string };
+        Returns: unknown;
       };
     };
     Enums: Record<string, never>;

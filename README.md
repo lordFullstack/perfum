@@ -128,12 +128,19 @@ npx supabase functions deploy admin-create-user
 - Pantalla `/compras`: registrar compra con múltiples ítems (insumo, cantidad, costo, lote/vencimiento opcionales) vía RPC `create_purchase` (todo o nada: cabecera + ítems + stock en una transacción), cancelar compra vía `cancel_purchase` (revierte stock, falla si ya no alcanza)
 - Movimientos de stock de una compra quedan trazados a ella (`stock_movements.reference_type = 'purchase'`)
 
+**Fase 5 — Recetas** ✅
+- Perfumes: alta/edición, imagen (bucket público `perfume-images`, pensado para el futuro Catálogo Online de la Fase 10)
+- Recetas versionadas por perfume: crear una nueva versión (vía RPC `create_recipe`) desactiva automáticamente la anterior sin borrarla — queda como historial; un índice único en la base garantiza que solo haya una versión activa por perfume
+- Costo total de receta calculado al vuelo (`calculate_recipe_cost`, nunca guardado — siempre refleja el costo promedio actual de los insumos)
+- Verificación de factibilidad (`check_recipe_feasibility`): antes de producir N unidades, indica si el stock alcanza y qué falta si no
+- **Nota de proceso**: el esquema de esta fase se había aplicado en una sesión de chat previa que perdió el contexto antes de documentarlo. Se auditó columna por columna, política por política y función por función contra la base real antes de continuar, y se corrigieron 3 gaps menores encontrados (4 funciones quedaban ejecutables por `anon` sin necesidad, faltaba el trigger de `updated_at` en `perfumes`, la política de update de `recipes` no tenía `with_check`) — ver `0007_recipes_security_fixes.sql`.
+
 **Decisiones de alcance tomadas:**
 - No hay tabla `supply_batches` con seguimiento FIFO de remanente por lote — el lote/vencimiento se guarda como dato informativo en `purchase_items`. Se agrega en una fase dedicada si se necesita descuento lote por lote.
 - No hay pantalla de historial de movimientos de stock todavía — llega con el Reporte de "Movimientos" (Fase 11).
 
 **Pendiente:**
-- Módulos de negocio: Recetas, Producción, Ventas, Caja, Clientes, Reportes, Auditoría, Configuración, Catálogo online
+- Módulos de negocio: Producción, Ventas, Caja, Clientes, Reportes, Auditoría, Configuración, Catálogo online
 - Sincronización offline real vía IndexedDB (`infrastructure/offline/`, hoy vacío)
 - Code-splitting por ruta (el bundle actual es un único chunk; se resuelve con `React.lazy` por módulo)
 - Flujo de "forzar cambio de contraseña en el primer login"
