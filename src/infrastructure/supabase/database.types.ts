@@ -3,7 +3,7 @@
  *
  * Generado desde el proyecto real (cpffnhucemcmiglbqujw) con
  * mcp__supabase__generate_typescript_types. Refleja el esquema hasta
- * la Fase 7 (Ventas) inclusive. Regenerar cuando se agreguen tablas
+ * la Fase 8 (Caja) inclusive. Regenerar cuando se agreguen tablas
  * o funciones nuevas:
  *   npx supabase gen types typescript --project-id cpffnhucemcmiglbqujw > src/infrastructure/supabase/database.types.ts
  */
@@ -56,6 +56,124 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      cash_movements: {
+        Row: {
+          amount: number
+          cash_session_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          reference_id: string | null
+          reference_type: string | null
+          type: string
+        }
+        Insert: {
+          amount: number
+          cash_session_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          type: string
+        }
+        Update: {
+          amount?: number
+          cash_session_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_movements_cash_session_id_fkey"
+            columns: ["cash_session_id"]
+            isOneToOne: false
+            referencedRelation: "cash_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_movements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cash_sessions: {
+        Row: {
+          branch_id: string
+          closed_at: string | null
+          closed_by: string | null
+          closing_amount: number | null
+          difference: number | null
+          expected_amount: number | null
+          id: string
+          notes: string | null
+          opened_at: string
+          opened_by: string | null
+          opening_amount: number
+          status: string
+        }
+        Insert: {
+          branch_id: string
+          closed_at?: string | null
+          closed_by?: string | null
+          closing_amount?: number | null
+          difference?: number | null
+          expected_amount?: number | null
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opened_by?: string | null
+          opening_amount: number
+          status?: string
+        }
+        Update: {
+          branch_id?: string
+          closed_at?: string | null
+          closed_by?: string | null
+          closing_amount?: number | null
+          difference?: number | null
+          expected_amount?: number | null
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opened_by?: string | null
+          opening_amount?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_sessions_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_sessions_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_sessions_opened_by_fkey"
+            columns: ["opened_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       perfumes: {
         Row: {
@@ -962,6 +1080,23 @@ export type Database = {
         Args: { p_quantity_to_produce: number; p_recipe_id: string }
         Returns: Json
       }
+      close_cash_session: {
+        Args: { p_closing_amount: number; p_notes?: string }
+        Returns: {
+          branch_id: string
+          closed_at: string | null
+          closed_by: string | null
+          closing_amount: number | null
+          difference: number | null
+          expected_amount: number | null
+          id: string
+          notes: string | null
+          opened_at: string
+          opened_by: string | null
+          opening_amount: number
+          status: string
+        }
+      }
       create_production: {
         Args: {
           p_notes?: string
@@ -1032,6 +1167,37 @@ export type Database = {
       }
       current_user_role: { Args: never; Returns: string }
       duplicate_recipe: { Args: { p_recipe_id: string }; Returns: Json }
+      open_cash_session: {
+        Args: { p_notes?: string; p_opening_amount: number }
+        Returns: {
+          branch_id: string
+          closed_at: string | null
+          closed_by: string | null
+          closing_amount: number | null
+          difference: number | null
+          expected_amount: number | null
+          id: string
+          notes: string | null
+          opened_at: string
+          opened_by: string | null
+          opening_amount: number
+          status: string
+        }
+      }
+      register_cash_movement: {
+        Args: { p_amount: number; p_notes?: string; p_type: string }
+        Returns: {
+          amount: number
+          cash_session_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          reference_id: string | null
+          reference_type: string | null
+          type: string
+        }
+      }
     }
     Enums: {
       [_ in never]: never
