@@ -36,8 +36,8 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Operación",
     items: [
       { label: "Dashboard", path: "/", icon: LayoutDashboard, implemented: true, permission: null },
-      { label: "Ventas", path: "/ventas", icon: ShoppingCart, implemented: false, permission: "sales.read_own" },
-      { label: "Producción", path: "/produccion", icon: Factory, implemented: false, permission: "production.read_own" },
+      { label: "Ventas", path: "/ventas", icon: ShoppingCart, implemented: true, permission: "sales.read_own" },
+      { label: "Producción", path: "/produccion", icon: Factory, implemented: true, permission: "production.read_own" },
       { label: "Caja", path: "/caja", icon: Wallet, implemented: false, permission: "cash.open_own" },
       { label: "Clientes", path: "/clientes", icon: Users, implemented: false, permission: "customers.read" },
     ],

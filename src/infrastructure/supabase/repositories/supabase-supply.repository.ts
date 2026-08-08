@@ -134,8 +134,8 @@ export class SupabaseSupplyRepository implements SupplyRepository {
       p_supply_id: input.supplyId,
       p_quantity: input.quantity,
       p_movement_type: input.movementType,
-      p_unit_cost: input.unitCost,
-      p_notes: input.notes,
+      p_unit_cost: input.unitCost ?? undefined,
+      p_notes: input.notes ?? undefined,
     });
 
     if (error || !data) {

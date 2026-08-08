@@ -73,7 +73,7 @@ export class SupabasePurchaseRepository implements PurchaseRepository {
     const { data, error } = await supabase.rpc("create_purchase", {
       p_supplier_id: input.supplierId,
       p_purchase_date: input.purchaseDate,
-      p_invoice_number: input.invoiceNumber,
+      p_invoice_number: input.invoiceNumber ?? "",
       p_items: input.items.map((item) => ({
         supply_id: item.supplyId,
         quantity: item.quantity,

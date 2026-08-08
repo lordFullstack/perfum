@@ -73,7 +73,7 @@ export class SupabaseRecipeRepository implements RecipeRepository {
     const { data, error } = await supabase.rpc("create_recipe", {
       p_perfume_id: input.perfumeId,
       p_yield_ml: input.yieldMl,
-      p_notes: input.notes,
+      p_notes: input.notes as string,
       p_items: input.items.map((item) => ({
         supply_id: item.supplyId,
         quantity: item.quantity,
