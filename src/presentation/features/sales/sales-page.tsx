@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
 
 import { usePermission } from "@/presentation/hooks/use-permission";
 import { usePerfumes } from "@/presentation/features/recipes/use-perfumes";
+import { useCustomers } from "@/presentation/features/customers/use-customers";
 import { useSales } from "@/presentation/features/sales/use-sales";
 import { SaleFormDialog } from "@/presentation/features/sales/sale-form-dialog";
 import { Badge } from "@/presentation/components/ui/badge";
@@ -22,6 +23,7 @@ export function SalesPage() {
   const canCancel = usePermission("sales.cancel");
 
   const { perfumes } = usePerfumes();
+  const { customers } = useCustomers();
   const { sales, isLoading, cancellingId, createSale, cancelSale } = useSales();
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -36,7 +38,11 @@ export function SalesPage() {
           </p>
         </div>
         {canCreate && (
-          <SaleFormDialog perfumes={perfumes.filter((p) => p.isActive)} onSubmit={createSale} />
+          <SaleFormDialog
+            perfumes={perfumes.filter((p) => p.isActive)}
+            customers={customers}
+            onSubmit={createSale}
+          />
         )}
       </div>
 

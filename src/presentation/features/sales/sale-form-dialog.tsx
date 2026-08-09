@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 
+import type { Customer } from "@/domain/entities/customer.entity";
 import type { Perfume } from "@/domain/entities/perfume.entity";
 import type { CreateSaleInput } from "@/domain/repositories/sale.repository";
 import { Button } from "@/presentation/components/ui/button";
@@ -35,18 +36,21 @@ function emptyRow(): ItemRow {
 
 interface SaleFormDialogProps {
   perfumes: Perfume[];
+  customers: Customer[];
   onSubmit: (input: CreateSaleInput) => Promise<boolean>;
 }
 
-export function SaleFormDialog({ perfumes, onSubmit }: SaleFormDialogProps) {
+export function SaleFormDialog({ perfumes, customers, onSubmit }: SaleFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [customerId, setCustomerId] = useState<string>("__walk_in__");
   const [customerName, setCustomerName] = useState("");
   const [notes, setNotes] = useState("");
   const [rows, setRows] = useState<ItemRow[]>([emptyRow()]);
 
   function resetForm() {
+    setCustomerId("__walk_in__");
     setCustomerName("");
     setNotes("");
     setRows([emptyRow()]);
@@ -69,7 +73,8 @@ export function SaleFormDialog({ perfumes, onSubmit }: SaleFormDialogProps) {
     setIsSubmitting(true);
 
     const success = await onSubmit({
-      customerName: customerName.trim() || null,
+      customerId: customerId === "__walk_in__" ? null : customerId,
+      customerName: customerId === "__walk_in__" ? customerName.trim() || null : null,
       notes: notes.trim() || null,
       items: rows
         .filter((r) => r.perfumeId)
@@ -108,14 +113,28 @@ export function SaleFormDialog({ perfumes, onSubmit }: SaleFormDialogProps) {
 
         <form onSubmit={handleSubmit} className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto pr-1">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="customerName">Cliente (opcional)</Label>
-            <Input
-              id="customerName"
-              placeholder="Consumidor final"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              disabled={isSubmitting}
-            />
+            <Label>Cliente</Label>
+            <Select value={customerId} onValueChange={setCustomerId} disabled={isSubmitting}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__walk_in__">Consumidor final</SelectItem>
+                {customers.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {customerId === "__walk_in__" && (
+              <Input
+                placeholder="Nombre (opcional)"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                disabled={isSubmitting}
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-3">

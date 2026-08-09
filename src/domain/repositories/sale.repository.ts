@@ -1,6 +1,7 @@
 import type { Sale, SaleItemDraft } from "@/domain/entities/sale.entity";
 
 export interface CreateSaleInput {
+  customerId: string | null;
   customerName: string | null;
   notes: string | null;
   items: SaleItemDraft[];

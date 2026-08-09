@@ -3,7 +3,7 @@
  *
  * Generado desde el proyecto real (cpffnhucemcmiglbqujw) con
  * mcp__supabase__generate_typescript_types. Refleja el esquema hasta
- * la Fase 8 (Caja) inclusive. Regenerar cuando se agreguen tablas
+ * la Fase 9 (Clientes) inclusive. Regenerar cuando se agreguen tablas
  * o funciones nuevas:
  *   npx supabase gen types typescript --project-id cpffnhucemcmiglbqujw > src/infrastructure/supabase/database.types.ts
  */
@@ -171,6 +171,53 @@ export type Database = {
             columns: ["opened_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          address: string | null
+          branch_id: string
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          phone: string | null
+          tax_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          branch_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          tax_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          branch_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          tax_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
             referencedColumns: ["id"]
           },
         ]
@@ -739,6 +786,7 @@ export type Database = {
         Row: {
           branch_id: string
           created_at: string
+          customer_id: string | null
           customer_name: string | null
           id: string
           notes: string | null
@@ -750,6 +798,7 @@ export type Database = {
         Insert: {
           branch_id: string
           created_at?: string
+          customer_id?: string | null
           customer_name?: string | null
           id?: string
           notes?: string | null
@@ -761,6 +810,7 @@ export type Database = {
         Update: {
           branch_id?: string
           created_at?: string
+          customer_id?: string | null
           customer_name?: string | null
           id?: string
           notes?: string | null
@@ -775,6 +825,13 @@ export type Database = {
             columns: ["branch_id"]
             isOneToOne: false
             referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
           {
@@ -1067,6 +1124,7 @@ export type Database = {
         Returns: {
           branch_id: string
           created_at: string
+          customer_id: string | null
           customer_name: string | null
           id: string
           notes: string | null
@@ -1147,10 +1205,16 @@ export type Database = {
         Returns: string
       }
       create_sale: {
-        Args: { p_customer_name?: string; p_items: Json; p_notes?: string }
+        Args: {
+          p_customer_id?: string
+          p_customer_name?: string
+          p_items: Json
+          p_notes?: string
+        }
         Returns: {
           branch_id: string
           created_at: string
+          customer_id: string | null
           customer_name: string | null
           id: string
           notes: string | null

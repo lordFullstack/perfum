@@ -10,6 +10,7 @@ import { RecipeProvider } from "@/presentation/hooks/use-recipe-management";
 import { ProductionProvider } from "@/presentation/hooks/use-production-management";
 import { SaleProvider } from "@/presentation/hooks/use-sale-management";
 import { CashProvider } from "@/presentation/hooks/use-cash-management";
+import { CustomerProvider } from "@/presentation/hooks/use-customer-management";
 import { ThemeProvider } from "@/presentation/hooks/theme-provider";
 import { ProtectedRoute } from "@/presentation/routes/protected-route";
 import { RequirePermission } from "@/presentation/routes/require-permission";
@@ -25,6 +26,7 @@ import { RecipesPage } from "@/presentation/features/recipes/recipes-page";
 import { ProductionPage } from "@/presentation/features/production/production-page";
 import { SalesPage } from "@/presentation/features/sales/sales-page";
 import { CashPage } from "@/presentation/features/cash/cash-page";
+import { CustomersPage } from "@/presentation/features/customers/customers-page";
 import { Toaster } from "@/presentation/components/ui/sonner";
 
 export function App() {
@@ -39,139 +41,151 @@ export function App() {
                   <PerfumeProvider>
                     <RecipeProvider>
                       <ProductionProvider>
-                        <SaleProvider>
-                          <CashProvider>
-                            <Routes>
-                              <Route path="/login" element={<LoginPage />} />
+                        <CustomerProvider>
+                          <SaleProvider>
+                            <CashProvider>
+                              <Routes>
+                                <Route path="/login" element={<LoginPage />} />
 
-                              <Route element={<ProtectedRoute />}>
-                                <Route element={<AppLayout />}>
-                                  <Route path="/" element={<DashboardPage />} />
-
-                                  <Route
-                                    path="/clientes"
-                                    element={<ModulePlaceholderRoute />}
-                                  />
-                                  <Route
-                                    path="/reportes"
-                                    element={<ModulePlaceholderRoute />}
-                                  />
-                                  <Route
-                                    path="/catalogo"
-                                    element={<ModulePlaceholderRoute />}
-                                  />
-                                  <Route
-                                    path="/auditoria"
-                                    element={<ModulePlaceholderRoute />}
-                                  />
-                                  <Route
-                                    path="/configuracion"
-                                    element={<ModulePlaceholderRoute />}
-                                  />
-
-                                  <Route
-                                    element={
-                                      <RequirePermission permission="users.read" />
-                                    }
-                                  >
+                                <Route element={<ProtectedRoute />}>
+                                  <Route element={<AppLayout />}>
                                     <Route
-                                      path="/usuarios"
-                                      element={<UsersPage />}
+                                      path="/"
+                                      element={<DashboardPage />}
+                                    />
+
+                                    <Route
+                                      path="/reportes"
+                                      element={<ModulePlaceholderRoute />}
+                                    />
+                                    <Route
+                                      path="/catalogo"
+                                      element={<ModulePlaceholderRoute />}
+                                    />
+                                    <Route
+                                      path="/auditoria"
+                                      element={<ModulePlaceholderRoute />}
+                                    />
+                                    <Route
+                                      path="/configuracion"
+                                      element={<ModulePlaceholderRoute />}
+                                    />
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="users.read" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/usuarios"
+                                        element={<UsersPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="inventory.read" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/insumos"
+                                        element={<InventoryPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="suppliers.read" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/proveedores"
+                                        element={<SuppliersPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="purchases.read" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/compras"
+                                        element={<PurchasesPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="recipes.read" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/recetas"
+                                        element={<RecipesPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="production.read_own" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/produccion"
+                                        element={<ProductionPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="sales.read_own" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/ventas"
+                                        element={<SalesPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="cash.open_own" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/caja"
+                                        element={<CashPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      element={
+                                        <RequirePermission permission="customers.read" />
+                                      }
+                                    >
+                                      <Route
+                                        path="/clientes"
+                                        element={<CustomersPage />}
+                                      />
+                                    </Route>
+
+                                    <Route
+                                      path="*"
+                                      element={<ModulePlaceholderRoute />}
                                     />
                                   </Route>
-
-                                  <Route
-                                    element={
-                                      <RequirePermission permission="inventory.read" />
-                                    }
-                                  >
-                                    <Route
-                                      path="/insumos"
-                                      element={<InventoryPage />}
-                                    />
-                                  </Route>
-
-                                  <Route
-                                    element={
-                                      <RequirePermission permission="suppliers.read" />
-                                    }
-                                  >
-                                    <Route
-                                      path="/proveedores"
-                                      element={<SuppliersPage />}
-                                    />
-                                  </Route>
-
-                                  <Route
-                                    element={
-                                      <RequirePermission permission="purchases.read" />
-                                    }
-                                  >
-                                    <Route
-                                      path="/compras"
-                                      element={<PurchasesPage />}
-                                    />
-                                  </Route>
-
-                                  <Route
-                                    element={
-                                      <RequirePermission permission="recipes.read" />
-                                    }
-                                  >
-                                    <Route
-                                      path="/recetas"
-                                      element={<RecipesPage />}
-                                    />
-                                  </Route>
-
-                                  <Route
-                                    element={
-                                      <RequirePermission permission="production.read_own" />
-                                    }
-                                  >
-                                    <Route
-                                      path="/produccion"
-                                      element={<ProductionPage />}
-                                    />
-                                  </Route>
-
-                                  <Route
-                                    element={
-                                      <RequirePermission permission="sales.read_own" />
-                                    }
-                                  >
-                                    <Route
-                                      path="/ventas"
-                                      element={<SalesPage />}
-                                    />
-                                  </Route>
-
-                                  <Route
-                                    element={
-                                      <RequirePermission permission="cash.open_own" />
-                                    }
-                                  >
-                                    <Route
-                                      path="/caja"
-                                      element={<CashPage />}
-                                    />
-                                  </Route>
-
-                                  <Route
-                                    path="*"
-                                    element={<ModulePlaceholderRoute />}
-                                  />
                                 </Route>
-                              </Route>
-                            </Routes>
+                              </Routes>
 
-                            <Toaster
-                              position="top-right"
-                              richColors
-                              closeButton
-                            />
-                          </CashProvider>
-                        </SaleProvider>
+                              <Toaster
+                                position="top-right"
+                                richColors
+                                closeButton
+                              />
+                            </CashProvider>
+                          </SaleProvider>
+                        </CustomerProvider>
                       </ProductionProvider>
                     </RecipeProvider>
                   </PerfumeProvider>

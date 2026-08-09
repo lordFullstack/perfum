@@ -16,6 +16,7 @@ export interface SaleItemDraft {
 
 export interface Sale {
   id: string;
+  customerId: string | null;
   customerName: string | null;
   subtotal: number;
   total: number;

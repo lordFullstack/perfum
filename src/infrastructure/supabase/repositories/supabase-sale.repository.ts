@@ -13,6 +13,7 @@ interface RawSaleItemRow {
 
 interface RawSaleRow {
   id: string;
+  customer_id: string | null;
   customer_name: string | null;
   subtotal: number;
   total: number;
@@ -23,7 +24,7 @@ interface RawSaleRow {
 }
 
 const SELECT_WITH_JOINS = `
-  id, customer_name, subtotal, total, status, notes, created_at,
+  id, customer_id, customer_name, subtotal, total, status, notes, created_at,
   sale_items (
     id, perfume_id, quantity, unit_price, subtotal,
     perfumes:perfume_id ( name )
@@ -33,6 +34,7 @@ const SELECT_WITH_JOINS = `
 function mapRow(row: RawSaleRow): Sale {
   return {
     id: row.id,
+    customerId: row.customer_id,
     customerName: row.customer_name,
     subtotal: Number(row.subtotal),
     total: Number(row.total),
@@ -69,6 +71,7 @@ export class SupabaseSaleRepository implements SaleRepository {
       })),
       p_customer_name: input.customerName ?? undefined,
       p_notes: input.notes ?? undefined,
+      p_customer_id: input.customerId ?? undefined,
     });
 
     if (error || !data) {

@@ -39,7 +39,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Ventas", path: "/ventas", icon: ShoppingCart, implemented: true, permission: "sales.read_own" },
       { label: "Producción", path: "/produccion", icon: Factory, implemented: true, permission: "production.read_own" },
       { label: "Caja", path: "/caja", icon: Wallet, implemented: true, permission: "cash.open_own" },
-      { label: "Clientes", path: "/clientes", icon: Users, implemented: false, permission: "customers.read" },
+      { label: "Clientes", path: "/clientes", icon: Users, implemented: true, permission: "customers.read" },
     ],
   },
   {
