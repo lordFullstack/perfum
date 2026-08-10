@@ -3,8 +3,8 @@
  *
  * Generado desde el proyecto real (cpffnhucemcmiglbqujw) con
  * mcp__supabase__generate_typescript_types. Refleja el esquema hasta
- * la Fase 9 (Clientes) inclusive. Regenerar cuando se agreguen tablas
- * o funciones nuevas:
+ * la Fase 10 (Catálogo Online parte 1) inclusive. Regenerar cuando se
+ * agreguen tablas o funciones nuevas:
  *   npx supabase gen types typescript --project-id cpffnhucemcmiglbqujw > src/infrastructure/supabase/database.types.ts
  */
 
@@ -215,6 +215,92 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "customers_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      online_order_items: {
+        Row: {
+          id: string
+          online_order_id: string
+          perfume_id: string
+          quantity: number
+          subtotal: number | null
+          unit_price: number
+        }
+        Insert: {
+          id?: string
+          online_order_id: string
+          perfume_id: string
+          quantity: number
+          subtotal?: number | null
+          unit_price: number
+        }
+        Update: {
+          id?: string
+          online_order_id?: string
+          perfume_id?: string
+          quantity?: number
+          subtotal?: number | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "online_order_items_online_order_id_fkey"
+            columns: ["online_order_id"]
+            isOneToOne: false
+            referencedRelation: "online_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "online_order_items_perfume_id_fkey"
+            columns: ["perfume_id"]
+            isOneToOne: false
+            referencedRelation: "perfumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      online_orders: {
+        Row: {
+          branch_id: string
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          id: string
+          notes: string | null
+          status: string
+          total: number
+        }
+        Insert: {
+          branch_id: string
+          created_at?: string
+          customer_email?: string | null
+          customer_name: string
+          customer_phone: string
+          id?: string
+          notes?: string | null
+          status?: string
+          total?: number
+        }
+        Update: {
+          branch_id?: string
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "online_orders_branch_id_fkey"
             columns: ["branch_id"]
             isOneToOne: false
             referencedRelation: "branches"
@@ -1260,6 +1346,40 @@ export type Database = {
           reference_id: string | null
           reference_type: string | null
           type: string
+        }
+      }
+      submit_online_order: {
+        Args: {
+          p_customer_email?: string
+          p_customer_name: string
+          p_customer_phone: string
+          p_items: Json
+          p_notes?: string
+        }
+        Returns: {
+          branch_id: string
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          id: string
+          notes: string | null
+          status: string
+          total: number
+        }
+      }
+      update_online_order_status: {
+        Args: { p_order_id: string; p_status: string }
+        Returns: {
+          branch_id: string
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          id: string
+          notes: string | null
+          status: string
+          total: number
         }
       }
     }

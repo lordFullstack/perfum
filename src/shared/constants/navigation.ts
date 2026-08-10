@@ -55,7 +55,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Análisis",
     items: [
       { label: "Reportes", path: "/reportes", icon: BarChart3, implemented: false, permission: "reports.read_own_sales" },
-      { label: "Catálogo online", path: "/catalogo", icon: Store, implemented: false, permission: null },
+      { label: "Pedidos online", path: "/pedidos-online", icon: Store, implemented: true, permission: "online_orders.read" },
     ],
   },
   {
