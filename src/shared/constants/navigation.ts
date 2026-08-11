@@ -54,7 +54,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Análisis",
     items: [
-      { label: "Reportes", path: "/reportes", icon: BarChart3, implemented: false, permission: "reports.read_own_sales" },
+      { label: "Reportes", path: "/reportes", icon: BarChart3, implemented: true, permission: "reports.read_own_sales" },
       { label: "Pedidos online", path: "/pedidos-online", icon: Store, implemented: true, permission: "online_orders.read" },
     ],
   },
@@ -62,7 +62,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Sistema",
     items: [
       { label: "Usuarios", path: "/usuarios", icon: UserCog, implemented: true, permission: "users.read" },
-      { label: "Auditoría", path: "/auditoria", icon: ShieldCheck, implemented: false, permission: "audit.read" },
+      { label: "Auditoría", path: "/auditoria", icon: ShieldCheck, implemented: true, permission: "audit.read" },
       { label: "Configuración", path: "/configuracion", icon: Settings, implemented: false, permission: "settings.manage" },
     ],
   },

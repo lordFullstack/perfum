@@ -3,8 +3,8 @@
  *
  * Generado desde el proyecto real (cpffnhucemcmiglbqujw) con
  * mcp__supabase__generate_typescript_types. Refleja el esquema hasta
- * la Fase 10 (Catálogo Online parte 1) inclusive. Regenerar cuando se
- * agreguen tablas o funciones nuevas:
+ * la Fase 12 (Auditoría) inclusive. Regenerar cuando se agreguen tablas
+ * o funciones nuevas:
  *   npx supabase gen types typescript --project-id cpffnhucemcmiglbqujw > src/infrastructure/supabase/database.types.ts
  */
 
@@ -24,6 +24,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_log: {
+        Row: {
+          action: string
+          branch_id: string | null
+          changed_at: string
+          changed_by: string | null
+          id: string
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+        }
+        Insert: {
+          action: string
+          branch_id?: string | null
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+        }
+        Update: {
+          action?: string
+          branch_id?: string | null
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       branches: {
         Row: {
           address: string | null
@@ -1317,6 +1361,10 @@ export type Database = {
       }
       current_user_role: { Args: never; Returns: string }
       duplicate_recipe: { Args: { p_recipe_id: string }; Returns: Json }
+      get_sales_report: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
       open_cash_session: {
         Args: { p_notes?: string; p_opening_amount: number }
         Returns: {
