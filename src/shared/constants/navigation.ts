@@ -63,7 +63,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Usuarios", path: "/usuarios", icon: UserCog, implemented: true, permission: "users.read" },
       { label: "Auditoría", path: "/auditoria", icon: ShieldCheck, implemented: true, permission: "audit.read" },
-      { label: "Configuración", path: "/configuracion", icon: Settings, implemented: false, permission: "settings.manage" },
+      { label: "Configuración", path: "/configuracion", icon: Settings, implemented: true, permission: "settings.manage" },
     ],
   },
 ];

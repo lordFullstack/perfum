@@ -3,8 +3,8 @@
  *
  * Generado desde el proyecto real (cpffnhucemcmiglbqujw) con
  * mcp__supabase__generate_typescript_types. Refleja el esquema hasta
- * la Fase 12 (Auditoría) inclusive. Regenerar cuando se agreguen tablas
- * o funciones nuevas:
+ * la Fase 16 (Catálogo Online parte 2, scaffolding Wompi) inclusive.
+ * Regenerar cuando se agreguen tablas o funciones nuevas:
  *   npx supabase gen types typescript --project-id cpffnhucemcmiglbqujw > src/infrastructure/supabase/database.types.ts
  */
 
@@ -24,6 +24,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_settings: {
+        Row: {
+          api_key_secret_id: string | null
+          branch_id: string
+          is_enabled: boolean
+          provider: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          api_key_secret_id?: string | null
+          branch_id: string
+          is_enabled?: boolean
+          provider?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          api_key_secret_id?: string | null
+          branch_id?: string
+          is_enabled?: boolean
+          provider?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_settings_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: true
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -100,6 +142,45 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      business_settings: {
+        Row: {
+          branch_id: string
+          currency: string
+          tax_rate: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          branch_id: string
+          currency?: string
+          tax_rate?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          branch_id?: string
+          currency?: string
+          tax_rate?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_settings_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: true
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cash_movements: {
         Row: {
@@ -348,6 +429,60 @@ export type Database = {
             columns: ["branch_id"]
             isOneToOne: false
             referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          branch_id: string
+          created_at: string
+          id: string
+          online_order_id: string | null
+          provider: string
+          provider_reference: string | null
+          provider_transaction_id: string | null
+          raw_response: Json | null
+          status: string
+        }
+        Insert: {
+          amount: number
+          branch_id: string
+          created_at?: string
+          id?: string
+          online_order_id?: string | null
+          provider?: string
+          provider_reference?: string | null
+          provider_transaction_id?: string | null
+          raw_response?: Json | null
+          status?: string
+        }
+        Update: {
+          amount?: number
+          branch_id?: string
+          created_at?: string
+          id?: string
+          online_order_id?: string | null
+          provider?: string
+          provider_reference?: string | null
+          provider_transaction_id?: string | null
+          raw_response?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_online_order_id_fkey"
+            columns: ["online_order_id"]
+            isOneToOne: false
+            referencedRelation: "online_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -1187,6 +1322,48 @@ export type Database = {
         }
         Relationships: []
       }
+      wompi_settings: {
+        Row: {
+          branch_id: string
+          integrity_secret_id: string | null
+          is_enabled: boolean
+          public_key: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          branch_id: string
+          integrity_secret_id?: string | null
+          is_enabled?: boolean
+          public_key?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          branch_id?: string
+          integrity_secret_id?: string | null
+          is_enabled?: boolean
+          public_key?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wompi_settings_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: true
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wompi_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1361,6 +1538,15 @@ export type Database = {
       }
       current_user_role: { Args: never; Returns: string }
       duplicate_recipe: { Args: { p_recipe_id: string }; Returns: Json }
+      generate_wompi_signature: {
+        Args: {
+          p_amount_in_cents: number
+          p_currency?: string
+          p_reference: string
+        }
+        Returns: string
+      }
+      get_dashboard_summary: { Args: never; Returns: Json }
       get_sales_report: {
         Args: { p_end_date?: string; p_start_date?: string }
         Returns: Json
@@ -1396,6 +1582,18 @@ export type Database = {
           type: string
         }
       }
+      set_ai_credentials: {
+        Args: { p_api_key: string; p_is_enabled: boolean; p_provider: string }
+        Returns: undefined
+      }
+      set_wompi_credentials: {
+        Args: {
+          p_integrity_secret: string
+          p_is_enabled: boolean
+          p_public_key: string
+        }
+        Returns: undefined
+      }
       submit_online_order: {
         Args: {
           p_customer_email?: string
@@ -1414,6 +1612,16 @@ export type Database = {
           notes: string | null
           status: string
           total: number
+        }
+      }
+      update_business_settings: {
+        Args: { p_currency: string; p_tax_rate: number }
+        Returns: {
+          branch_id: string
+          currency: string
+          tax_rate: number
+          updated_at: string
+          updated_by: string | null
         }
       }
       update_online_order_status: {
